@@ -139,7 +139,7 @@ public class IssuePanel extends AbstractJPanel {
     }
 
     public void changeTitle(){
-        ((JFrame)getRootPane().getParent()).setTitle("İssues");
+        ((JFrame)getRootPane().getParent()).setTitle("Issues");
     }
     public static void fillScrollPanes(ArrayList<Issue> issueType1List, ArrayList<Issue> issueType2List, JTableThroughput jTableThroughputForIssueType1, JTableThroughput jTableThroughputForIssueType2 ) {
         jTableIssueForIssueType1 = new JTableIssue();

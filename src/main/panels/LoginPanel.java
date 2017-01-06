@@ -22,7 +22,6 @@ public class LoginPanel extends AbstractJPanel {
 
 
         JButton settingsIcon = new JButton();
-        settingsIcon.setIcon(new ImageIcon("D:\\Users\\ferhaty\\Desktop\\settings.png"));
         settingsIcon.setBounds(970, 25, 32, 32);
         settingsIcon.addActionListener(new ActionListener() {
             @Override
@@ -55,7 +54,6 @@ public class LoginPanel extends AbstractJPanel {
         add(loginButton);
 
         JLabel loginIcon = new JLabel("");
-        loginIcon.setIcon(new ImageIcon("D:\\Users\\ferhaty\\Desktop\\1475076550_lock.png"));
         loginIcon.setBounds(285, 245, 150, 130);
         add(loginIcon);
 

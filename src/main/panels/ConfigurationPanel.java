@@ -19,14 +19,13 @@ public class ConfigurationPanel extends AbstractJPanel {
     public void init(){
         ((JFrame)getRootPane().getParent()).setTitle("Configuration");
         JLabel jqlIcon = new JLabel("");
-        jqlIcon.setIcon(new ImageIcon("D:\\Users\\ferhaty\\Desktop\\url.gif"));
         jqlIcon.setBounds(200, 215, 15, 30);
         add(jqlIcon);
 
         JTextField jqlField = new JTextField();
         jqlField.setBounds(290, 215, 550, 30);
         add(jqlField);
-        jqlField.setText("fixVersion=\"RTC Client for S4B 3.0.1\" and module = \"RTC client for S4B\"");
+        jqlField.setText("fixVersion=\"\" and module = \"\"");
         jqlField.setFont(new Font("Verdana", Font.ITALIC, 14));
         jqlField.setColumns(10);
 
