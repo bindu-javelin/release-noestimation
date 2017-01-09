@@ -1,5 +1,8 @@
 
-This project is useful desktop application for use The NoEstimates Movement on your project which developed by Atlassian JIRA platform.
+This project is a desktop application to use The NoEstimates Movement on your project which developed on Atlassian JIRA API.
+
+Basicly it gives a project finish time projection by analyzing previous project data and helps users to forecast their project budget and prepare sales proposals.
+ 
 
 ###how to build and run?
 
