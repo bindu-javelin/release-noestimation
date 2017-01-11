@@ -41,6 +41,7 @@ public class DBHelper {
                 Statement statement = connection.createStatement();
                 String sql = "INSERT INTO issues VALUES ("+projectId+",'"+issue.getIssueKey()+"','"+GlobalFunctions.dateFormatString(issue.getCreatedDate())+"'," +
                         "'"+GlobalFunctions.dateFormatString(issue.getCompletedDate())+"',"+issue.getTimeCycle()+",'"+issue.getIssueTypeName()+"');";
+                System.out.println(sql);
                 statement.executeUpdate(sql);
                 statement.close();
                 connection.commit();
@@ -376,7 +377,7 @@ public class DBHelper {
             statement2.executeUpdate(sql);
             statement2.close();
             connection.commit();
-
+            System.out.println("Database deleted successfully");
 
         } catch (SQLException e) {
             e.printStackTrace();
