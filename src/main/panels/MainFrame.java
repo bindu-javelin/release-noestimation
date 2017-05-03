@@ -2,6 +2,10 @@ package main.panels;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import main.functions.GlobalFunctions;
+import sun.net.www.content.image.jpeg;
+
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +18,7 @@ import java.util.Properties;
 public class MainFrame extends JFrame {
 
 
+	public static final String TAG = "";
     public static Properties PROP;
     public static int LOGIN_PANEL = 0, CONFIGURATION_PANEL = 1, THROUGHPUT_PANEL = 2, ISSUE_PANEL = 3, ANALYZING_PANEL = 4;
     public static int WINDOW_WIDTH = 1050, WINDOW_HEIGHT=700;
@@ -56,8 +61,9 @@ public class MainFrame extends JFrame {
         setContentPane(mainPanel);
         changePanel(LOGIN_PANEL);
         setTitle("Login");
-
     }
+    
+    public static boolean first = true;
 
     public static void changePanel(int panelId ){
         mainPanel.invalidate();

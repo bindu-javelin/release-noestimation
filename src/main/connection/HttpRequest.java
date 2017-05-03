@@ -12,6 +12,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Base64;
+import java.util.zip.GZIPInputStream;
 
 public class HttpRequest {
     private static String TAG="HttpRequest.java";
@@ -79,8 +81,7 @@ public class HttpRequest {
             System.out.println(TAG + " Response Code : " + responseCode);
 
             if(responseCode < 300){
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String output;
                 StringBuffer response = new StringBuffer();
 
@@ -102,6 +103,61 @@ public class HttpRequest {
         }
 
 
+        return null;
+    }
+
+    
+    public static String postRequestLogin(String urlString, String username, String password){
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            // Setting basic post request
+            byte[] encodedBytes = Base64.getEncoder().encode((username+":"+password).getBytes());
+            con.setRequestProperty("Authorization", "Basic" + new String(encodedBytes));
+            con.setRequestMethod("POST");
+            con.setRequestProperty("User-Agent", USER_AGENT);
+            con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+            con.setRequestProperty("Content-Type","application/json");
+            
+
+
+            // Send post request
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            String data = "{\"username\":\""+username +"\",\"password\":\""+password +"\"}";
+            wr.writeBytes(data);
+            wr.flush();
+            wr.close();
+
+            int responseCode = con.getResponseCode();
+
+            System.out.println(TAG + " \nSending 'POST' request to URL : " + url);
+            System.out.println(TAG + " Post Data : " + data);
+            System.out.println(TAG + " Response Code : " + responseCode);
+
+            if(responseCode < 300){
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String output;
+                StringBuffer response = new StringBuffer();
+
+                while ((output = in.readLine()) != null) {
+                    response.append(output);
+                }
+                in.close();
+                con.disconnect();
+                return response.toString();
+            }
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         return null;
     }
 

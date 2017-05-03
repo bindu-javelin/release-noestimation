@@ -1,166 +1,69 @@
-
-
 package main.panels;
 
+import main.classes.Selection;
+import main.classes.Throughput;
 import main.database.DBHelper;
-import main.functions.GlobalFunctions;
+import main.functions.FrequencyAndDeliveryTime;
+import main.functions.Statistics;
 import main.view.CreateChart;
 import main.view.JTableAnalyzing;
-import main.view.JTableIssue;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 public class AnalyzingPanel extends AbstractJPanel {
-    JLabel issueType1Label;
-    JLabel issueType1Icon;
 
-    JLabel issueType2Label;
-    JLabel issueType2Icon;
-
-    JLabel issueType1ScopeLabel;
-    JLabel issueType2ScopeLabel;
-
-    JTextField issueType1ScopeText;
-    JTextField issueType2ScopeText;
-
-    JScrollPane issueType1ScrollPane;
-    JScrollPane issueType2ScrollPane;
-
-    JScrollPane issueType1SummaryScrolLPane;
-    JScrollPane issueType2SummaryScrolLPane;
-
-    JScrollPane issueType1DeliveryTimeScrollPane;
-    JScrollPane issueType2DeliveryTimeScrollPane;
-
-    JScrollPane issueType1SummaryDeliveryScrollPane;
-    JScrollPane issueType2SummaryDeliveryScrollPane;
-
-    JScrollPane issueType1ResultPane;
-    JScrollPane issueType2ResultPane;
-
-    JTableIssue jTableIssueForIssueType1;
-    JTableIssue jTableIssueForIssueType2;
-    JTableAnalyzing jTableAnalyzingForIssueType1;
-    JTableAnalyzing jTableAnalyzingForIssueType2;
-
-    JScrollPane jScrollPaneResultForBoth;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3675240366039045080L;
+	JScrollPane jScrollPaneResultForBoth;
     double avg = 0;
     double perc85 = 0 ;
     double perc95 = 0;
-
+    Multiple m;
+    
     ChartFrame chartFrame;
 
     public AnalyzingPanel() {
 
-        issueType1Label = new JLabel();
-        issueType1Label.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
-        issueType1Label.setBounds(50, 25, 500, 20);
-        add(issueType1Label);
+    }
 
-        issueType1Icon = new JLabel("");
-        issueType1Icon.setBounds(25, 25, 20, 20);
-        add(issueType1Icon);
+    AnalysisView [] viewList;
+    ArrayList<Selection> selectionList;
+    public void init(ArrayList<Selection> selectionList){
+    	m = new Multiple(selectionList);
+    	removeAll();
+    	AnalysisView.resetLength();
 
-        issueType1ScrollPane = new JScrollPane();
-        issueType1ScrollPane.setBounds(25, 50, 150, 245);
-        issueType1ScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType1ScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        add(issueType1ScrollPane);
-
-        issueType1SummaryScrolLPane = new JScrollPane();
-        issueType1SummaryScrolLPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType1SummaryScrolLPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType1SummaryScrolLPane.setBounds(200, 50, 180, 35);
-        add(issueType1SummaryScrolLPane);
-
-        issueType1DeliveryTimeScrollPane = new JScrollPane();
-        issueType1DeliveryTimeScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType1DeliveryTimeScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType1DeliveryTimeScrollPane.setBounds(200, 100, 180, 195);
-        add(issueType1DeliveryTimeScrollPane);
-
-         issueType1SummaryDeliveryScrollPane = new JScrollPane();
-        issueType1SummaryDeliveryScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType1SummaryDeliveryScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType1SummaryDeliveryScrollPane.setBounds(560, 50, 250, 245);
-        add(issueType1SummaryDeliveryScrollPane);
-
-        issueType1ResultPane = new JScrollPane();
-        issueType1ResultPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType1ResultPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType1ResultPane.setBounds(850,50,150,245);
-        add(issueType1ResultPane);
-
-        issueType1ScopeLabel = new JLabel("Scope");
-        issueType1ScopeLabel.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
-        issueType1ScopeLabel.setBounds(440, 125, 120, 20);
-        add(issueType1ScopeLabel);
-
-        issueType2ScopeLabel = new JLabel("Scope");
-        issueType2ScopeLabel.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
-        issueType2ScopeLabel.setBounds(440, 420, 120, 20);
-        add(issueType2ScopeLabel);
-
-        issueType1ScopeText = new JTextField();
-        issueType1ScopeText.setBounds(400, 155, 140, 35);
-        issueType1ScopeText.setHorizontalAlignment(JTextField.CENTER);
-        issueType1ScopeText.setFont(new Font("Segoe Print", Font.BOLD | Font.ITALIC, 18));
-        add(issueType1ScopeText);
-
-        issueType2ScopeText = new JTextField();
-        issueType2ScopeText.setBounds(400, 450, 140, 35);
-        issueType2ScopeText.setHorizontalAlignment(JTextField.CENTER);
-        issueType2ScopeText.setFont(new Font("Segoe Print", Font.BOLD | Font.ITALIC, 18));
-        add(issueType2ScopeText);
-
-
-        issueType2Label = new JLabel();
-        issueType2Label.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
-        issueType2Label.setBounds(50, 320, 500, 20);
-        add(issueType2Label);
-
-        issueType2Icon = new JLabel("");
-        issueType2Icon.setBounds(25, 320, 20, 20);
-        add(issueType2Icon);
-
-        issueType2ScrollPane = new JScrollPane();
-        issueType2ScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType2ScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType2ScrollPane.setBounds(25, 345, 150, 245);
-        add(issueType2ScrollPane);
-
-        issueType2SummaryScrolLPane = new JScrollPane();
-        issueType2SummaryScrolLPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType2SummaryScrolLPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType2SummaryScrolLPane.setBounds(200, 345, 180, 35);
-        add(issueType2SummaryScrolLPane);
-
-        issueType2DeliveryTimeScrollPane = new JScrollPane();
-        issueType2DeliveryTimeScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType2DeliveryTimeScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType2DeliveryTimeScrollPane.setBounds(200, 395, 180, 195);
-        add(issueType2DeliveryTimeScrollPane);
-
-         issueType2SummaryDeliveryScrollPane = new JScrollPane();
-        issueType2SummaryDeliveryScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType2SummaryDeliveryScrollPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType2SummaryDeliveryScrollPane.setBounds(560, 345, 250, 245);
-        add(issueType2SummaryDeliveryScrollPane);
-
-        issueType2ResultPane = new JScrollPane();
-        issueType2ResultPane.setBorder(BorderFactory.createEmptyBorder());
-        issueType2ResultPane.getViewport().setBackground(new Color(247, 249, 252));
-        issueType2ResultPane.setBounds(850,345,150,245);
-        add(issueType2ResultPane);
+        
 
 
         jScrollPaneResultForBoth = new JScrollPane();
@@ -197,6 +100,18 @@ public class AnalyzingPanel extends AbstractJPanel {
                 createHistogram();
             }
         });
+        
+        
+        JButton createMultipleButton = new JButton("Multiple");
+        createMultipleButton.setFont(new Font("Segoe Print", Font.BOLD | Font.ITALIC, 12));
+        createMultipleButton.setBounds(690, 600, 150, 35);
+        add(createMultipleButton);
+
+        createMultipleButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	m.createMultiple();
+            }
+        });
 
 
         JButton reCalculateButton = new JButton("Re-Calculate");
@@ -207,140 +122,105 @@ public class AnalyzingPanel extends AbstractJPanel {
         reCalculateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reCalculate(issueType1ScopeText,issueType2ScopeText);
-                ((JFrame)getRootPane().getParent()).setTitle("Analyzing");
+                reCalculate();
+                ((JFrame)getRootPane().getParent()).setTitle(MainFrame.TAG + "Analyzing");
             }
         });
-
-
-
-
-    }
-
-    public void init(JTableIssue jTableIssueForIssueType1,JTableIssue jTableIssueForIssueType2){
-        ((JFrame)getRootPane().getParent()).setTitle("Analyzing");
-        this.jTableIssueForIssueType1 = jTableIssueForIssueType1;
-        this.jTableIssueForIssueType2 = jTableIssueForIssueType2;
+    	
+    	viewList = new AnalysisView[selectionList.size()];
+    	
+        ((JFrame)getRootPane().getParent()).setTitle(MainFrame.TAG + "Analyzing");
+        this.selectionList = selectionList;
         chartFrame = new ChartFrame();
         chartFrame.setVisible(false);
         ThroughputPanel throughputPanel = (ThroughputPanel) MainFrame.jPanelList.get(MainFrame.THROUGHPUT_PANEL);
-
-        issueType1Label.setText(throughputPanel.getIssueType1());
-        try {
-            URL url = new URL(DBHelper.getIssueTypeIcon(issueType1Label.getText()));
-            BufferedImage img = ImageIO.read(url);
-            ImageIcon icon  = new ImageIcon(img);
-            issueType1Icon.setIcon(icon);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (throughputPanel.issueType2List.size() != 0) {
-            issueType2Label.setText(throughputPanel.getIssueType2());
-            try {
-                URL url = new URL(DBHelper.getIssueTypeIcon(issueType2Label.getText()));
-                BufferedImage img = ImageIO.read(url);
-                ImageIcon icon = new ImageIcon(img);
-                issueType2Icon.setIcon(icon);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(throughputPanel.getIssueType2().equals("")){
-            issueType2Icon.setVisible(false);
-            issueType2ScopeLabel.setVisible(false);
-            issueType2ScopeText.setVisible(false);
-        }else if(throughputPanel.issueType2List.size() == 0){
-            issueType2Icon.setVisible(false);
-            issueType2ScopeLabel.setVisible(false);
-            issueType2ScopeText.setVisible(false);
-        }else{
-            issueType2Icon.setVisible(true);
-            issueType2ScopeLabel.setVisible(true);
-            issueType2ScopeText.setVisible(true);
-
-        }
-        jTableAnalyzingForIssueType1 = new JTableAnalyzing();
-        issueType1ScrollPane.setViewportView(jTableAnalyzingForIssueType1.createTakTimeAndResamplingTable(jTableIssueForIssueType1));
-        issueType1SummaryScrolLPane.setViewportView(jTableAnalyzingForIssueType1.createSummaryDeliveryTimeTable(1));
-        issueType1DeliveryTimeScrollPane.setViewportView(jTableAnalyzingForIssueType1.createDeliveryTimeSimulationTable());
-        issueType1SummaryDeliveryScrollPane.setViewportView(jTableAnalyzingForIssueType1.createStatisticsTable());
-        issueType1ResultPane.setViewportView(jTableAnalyzingForIssueType1.createResultTable());
-
-
-            avg+= jTableAnalyzingForIssueType1.getAvg();
-            perc85 += jTableAnalyzingForIssueType1.getPerc85();
-            perc95 += jTableAnalyzingForIssueType1.getPerc95();
-
-        if(jTableIssueForIssueType2.getShowWipOnTable()!=null){
-
-            jTableAnalyzingForIssueType2 = new JTableAnalyzing();
-            issueType2ScrollPane.setViewportView(jTableAnalyzingForIssueType2.createTakTimeAndResamplingTable(jTableIssueForIssueType2));
-            issueType2SummaryScrolLPane.setViewportView(jTableAnalyzingForIssueType2.createSummaryDeliveryTimeTable(2));
-            issueType2DeliveryTimeScrollPane.setViewportView(jTableAnalyzingForIssueType2.createDeliveryTimeSimulationTable());
-            issueType2SummaryDeliveryScrollPane.setViewportView(jTableAnalyzingForIssueType2.createStatisticsTable());
-            issueType2ResultPane.setViewportView(jTableAnalyzingForIssueType2.createResultTable());
-
-
-                avg+= jTableAnalyzingForIssueType2.getAvg();
-                perc85 += jTableAnalyzingForIssueType2.getPerc85();
-                perc95 += jTableAnalyzingForIssueType2.getPerc95();
-
-
-        }
-
+        
+      //  avg = 0;
+      //  perc85 = 0;
+      //  perc95 = 0;
+        
+        for (int i = 0; i < selectionList.size(); i++) {
+            Selection selection = selectionList.get(i);
+            selection.setTableAnalyzing(new JTableAnalyzing());
+            
+            viewList[i] = new AnalysisView(selection.getIssueType(),selection.getTableIssue().getShowWipOnTable().length);
+            viewList[i].setLayout(null);
+            viewList[i].setBackground(null);
+            viewList[i].setBounds(0, (AnalysisView.length()-1)*300, 1000, 300);
+            
+            viewList[i].getIssueScrollPane().setViewportView(selection.getTableAnalyzing().createTakTimeAndResamplingTable(selectionList.get(i).getTableIssue()));
+            viewList[i].getIssueSummaryScrolLPane().setViewportView(selection.getTableAnalyzing().createSummaryDeliveryTimeTable());
+            viewList[i].getIssueDeliveryTimeScrollPane().setViewportView(selection.getTableAnalyzing().createDeliveryTimeSimulationTable());
+            
+            viewList[i].getIssueSummaryDeliveryScrollPane().setViewportView(selection.getTableAnalyzing().createStatisticsTable());
+            viewList[i].getIssueResultPane().setViewportView(selection.getTableAnalyzing().createResultTable());
+            avg+= selection.getTableAnalyzing().getAvg();
+            perc85+= selection.getTableAnalyzing().getPerc85();
+            perc95+= selection.getTableAnalyzing().getPerc95();
+            
+            add(viewList[i]);
+		}
         jScrollPaneResultForBoth.setViewportView(createResultTableForBoth(String.valueOf(avg),String.valueOf(perc85),String.valueOf(perc95)));
 
     }
-    public void reCalculate(JTextField issueType1ScopeText,JTextField issueType2ScopeText){
+    
+    
+    
+    
+    
+    
+    /* private double[] calculateMultiple(){
+    	double[] d = new double[20000];
+    	double perc1 = 40;
+    	for (int i = 0; i < d.length; i++) {
+			double d2=0;
+			for (int j = 0; j < selectionList.size(); j++) {
+				d2 += perc1 * randomFromArray(selectionList.get(j).getTableAnalyzing().getDeliveryTimeSimulationDatas());
+			}
+			d[i] = d2;
+		}
+    	return d;
+    } */
+    
+    public void reCalculate(){
 
         avg = 0;
         perc85 = 0;
         perc95 = 0;
-        if(!issueType1ScopeText.getText().equals("")){
-            int issueType1Scope= Integer.parseInt(issueType1ScopeText.getText());
-            issueType1ScrollPane.setViewportView(jTableAnalyzingForIssueType1.createTakTimeAndResamplingTable(jTableIssueForIssueType1,issueType1Scope));
-            issueType1SummaryScrolLPane.setViewportView(jTableAnalyzingForIssueType1.createSummaryDeliveryTimeTable(1,issueType1Scope));
-            issueType1DeliveryTimeScrollPane.setViewportView(jTableAnalyzingForIssueType1.createDeliveryTimeForNProjectSimulationTable(issueType1Scope));
-            issueType1SummaryDeliveryScrollPane.setViewportView(jTableAnalyzingForIssueType1.createStatisticsTable());
-            issueType1ResultPane.setViewportView(jTableAnalyzingForIssueType1.createResultTable());
-            avg+= jTableAnalyzingForIssueType1.getAvg();
-            perc85+= jTableAnalyzingForIssueType1.getPerc85();
-            perc95+= jTableAnalyzingForIssueType1.getPerc95();
-        }
-
-        if(jTableIssueForIssueType2.getShowWipOnTable()!=null){
-            if(!issueType2ScopeText.getText().equals("")) {
-                int issueType2Scope= Integer.parseInt(issueType2ScopeText.getText());
-                issueType2ScrollPane.setViewportView(jTableAnalyzingForIssueType2.createTakTimeAndResamplingTable(jTableIssueForIssueType2,issueType2Scope));
-                issueType2SummaryScrolLPane.setViewportView(jTableAnalyzingForIssueType2.createSummaryDeliveryTimeTable(2,issueType2Scope));
-                issueType2DeliveryTimeScrollPane.setViewportView(jTableAnalyzingForIssueType2.createDeliveryTimeForNProjectSimulationTable(issueType2Scope));
-                issueType2SummaryDeliveryScrollPane.setViewportView(jTableAnalyzingForIssueType2.createStatisticsTable());
-                issueType2ResultPane.setViewportView(jTableAnalyzingForIssueType2.createResultTable());
-                avg+= jTableAnalyzingForIssueType2.getAvg();
-                perc85+= jTableAnalyzingForIssueType2.getPerc85();
-                perc95+= jTableAnalyzingForIssueType2.getPerc95();
-            }
-
-        }
+        
+        int []s = new int[2];
+        
+        for (int i = 0; i < selectionList.size(); i++) {
+            Selection selection = selectionList.get(i);
+            //selection.setTableAnalyzing(new JTableAnalyzing());
+            
+            viewList[i].getIssueScrollPane().setViewportView(selection.getTableAnalyzing().createTakTimeAndResamplingTable(selection.getTableIssue(),viewList[i].getScope()));
+            viewList[i].getIssueSummaryScrolLPane().setViewportView(selection.getTableAnalyzing().createSummaryDeliveryTimeTable(viewList[i].getScope()));
+            viewList[i].getIssueDeliveryTimeScrollPane().setViewportView(selection.getTableAnalyzing().createDeliveryTimeSimulationTable(viewList[i].getScope()));
+            viewList[i].getIssueSummaryDeliveryScrollPane().setViewportView(selection.getTableAnalyzing().createStatisticsTable());
+            viewList[i].getIssueResultPane().setViewportView(selection.getTableAnalyzing().createResultTable());
+            avg+= selection.getTableAnalyzing().getAvg();
+            perc85+= selection.getTableAnalyzing().getPerc85();
+            perc95+= selection.getTableAnalyzing().getPerc95();
+            
+            s[i] = viewList[i].getScope();
+		}
+        m.setScopeList(s);
+        
         jScrollPaneResultForBoth.setViewportView(createResultTableForBoth(String.valueOf(avg),String.valueOf(perc85),String.valueOf(perc95)));
-        createHistogram();
+        //createHistogram();
     }
 
     public void createHistogram(){
         chartFrame.setVisible(true);
         CreateChart createChart = new CreateChart();
-        ThroughputPanel throughputPanel = (ThroughputPanel) MainFrame.jPanelList.get(MainFrame.THROUGHPUT_PANEL);
         chartFrame.getContentPane().removeAll();
-        chartFrame.add(createChart.createChartPanel(jTableAnalyzingForIssueType1.getProbability(),
-                jTableAnalyzingForIssueType1.getDeliveryTime(),jTableAnalyzingForIssueType1.getCdf(),throughputPanel.getIssueType1(),1));
 
-        if(!throughputPanel.getIssueType2().equals("")){
-
-            chartFrame.add(createChart.createChartPanel(jTableAnalyzingForIssueType2.getProbability(),
-                    jTableAnalyzingForIssueType2.getDeliveryTime(),jTableAnalyzingForIssueType2.getCdf(),throughputPanel.getIssueType2(),2));
-
-        }
+        for (int i = 0; i < selectionList.size(); i++) {
+            chartFrame.add(createChart.createChartPanel(selectionList.get(i).getTableAnalyzing().getProbability(),
+            		selectionList.get(i).getTableAnalyzing().getDeliveryTime(),selectionList.get(i).getTableAnalyzing().getCdf(),selectionList.get(i).getIssueType(),1));
+		}
+        
         chartFrame.getContentPane().invalidate();
         chartFrame.getContentPane().validate();
     }
@@ -376,5 +256,572 @@ public class AnalyzingPanel extends AbstractJPanel {
         tableLastStatistics.getColumnModel().getColumn(1).setPreferredWidth(50);
         return tableLastStatistics;
     }
+}
+    
 
+
+class AnalysisView extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4785543889170915642L;
+
+	/**
+	 * 
+	 */
+	private static int x=0;
+
+	private JScrollPane issueScrollPane,issueSummaryScrolLPane,issueDeliveryTimeScrollPane,issueSummaryDeliveryScrollPane,issueResultPane;
+	JTextField issueScopeText;
+	//private JLabel issueLabel,issueIcon,issueScopeLabel;
+	//private JTextField issueScopeText;
+	public AnalysisView(String issueType, int scope) {
+        
+		JLabel issueLabel = new JLabel();
+        issueLabel.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
+        issueLabel.setBounds(50, 25, 500, 20);
+        add(issueLabel);
+
+        JLabel issueIcon = new JLabel("");
+        issueIcon.setBounds(25, 25, 20, 20);
+        add(issueIcon);
+
+        issueScrollPane = new JScrollPane();
+        issueScrollPane.setBounds(25, 50, 150, 245);
+        issueScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        issueScrollPane.getViewport().setBackground(new Color(247, 249, 252));
+        add(issueScrollPane);
+
+        issueSummaryScrolLPane = new JScrollPane();
+        issueSummaryScrolLPane.setBorder(BorderFactory.createEmptyBorder());
+        issueSummaryScrolLPane.getViewport().setBackground(new Color(247, 249, 252));
+        issueSummaryScrolLPane.setBounds(200, 50, 180, 35);
+        add(issueSummaryScrolLPane);
+
+        issueDeliveryTimeScrollPane = new JScrollPane();
+        issueDeliveryTimeScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        issueDeliveryTimeScrollPane.getViewport().setBackground(new Color(247, 249, 252));
+        issueDeliveryTimeScrollPane.setBounds(200, 100, 180, 195);
+        add(issueDeliveryTimeScrollPane);
+
+        issueSummaryDeliveryScrollPane = new JScrollPane();
+        issueSummaryDeliveryScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        issueSummaryDeliveryScrollPane.getViewport().setBackground(new Color(247, 249, 252));
+        issueSummaryDeliveryScrollPane.setBounds(560, 50, 250, 245);
+        add(issueSummaryDeliveryScrollPane);
+
+        issueResultPane = new JScrollPane();
+        issueResultPane.setBorder(BorderFactory.createEmptyBorder());
+        issueResultPane.getViewport().setBackground(new Color(247, 249, 252));
+        issueResultPane.setBounds(850,50,150,245);
+        add(issueResultPane);
+
+        JLabel issueScopeLabel = new JLabel("Scope");
+        issueScopeLabel.setFont(new Font("Mongolian Baiti", Font.BOLD | Font.ITALIC, 20));
+        issueScopeLabel.setBounds(440, 125, 120, 20);
+        add(issueScopeLabel);
+
+        issueScopeText = new JTextField(""+scope);
+        issueScopeText.setBounds(400, 155, 140, 35);
+        issueScopeText.setHorizontalAlignment(JTextField.CENTER);
+        issueScopeText.setFont(new Font("Segoe Print", Font.BOLD | Font.ITALIC, 18));
+        add(issueScopeText);
+        
+        issueLabel.setText(issueType);
+        try {
+            URL url = new URL(DBHelper.getInstance().getIssueTypeIcon(issueType));
+            BufferedImage img = ImageIO.read(url);
+            ImageIcon icon  = new ImageIcon(img);
+            issueIcon.setIcon(icon);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        x++;
+	}
+	
+	public static int length(){
+		return x;
+	}
+	
+	public static void resetLength(){
+		x = 0;
+	}
+
+	public JScrollPane getIssueScrollPane() {
+		return issueScrollPane;
+	}
+
+	public JScrollPane getIssueSummaryScrolLPane() {
+		return issueSummaryScrolLPane;
+	}
+
+	public JScrollPane getIssueDeliveryTimeScrollPane() {
+		return issueDeliveryTimeScrollPane;
+	}
+
+	public JScrollPane getIssueSummaryDeliveryScrollPane() {
+		return issueSummaryDeliveryScrollPane;
+	}
+
+	public JScrollPane getIssueResultPane() {
+		return issueResultPane;
+	}
+
+	public int getScope() {
+		return Integer.parseInt(issueScopeText.getText());
+	}
+}
+
+
+
+class Multiple {
+
+	private ArrayList<Selection> selectionList;
+    private final int multipleSIP = 20000;
+    private int localeSIP = 10000;
+    private double[] projectsTaktTime = new double[multipleSIP];
+    
+    public Multiple(ArrayList<Selection> selectionList) {
+		this.selectionList = selectionList;
+	}
+    
+    
+    public void setScopeList(int[] scopes){
+    	newScopeState = true;
+    	newScope = scopes;
+    }
+    private int newScope[];
+    private static boolean newScopeState = false;
+    
+	public void createMultiple(){
+    	JFrame frame = new JFrame(MainFrame.TAG + "Analysis");
+    	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    	frame.setBounds(100, 100, 1024, 768);
+    	frame.setVisible(true);
+    	frame.setLayout(null);
+    	
+    	JScrollPane sPane = new JScrollPane();
+    	sPane.setBorder(BorderFactory.createEmptyBorder());
+    	sPane.getViewport().setBackground(new Color(247, 249, 252));
+    	sPane.setBounds(15, 15, 400 + (selectionList.size()-1)*100, 250);
+        frame.add(sPane);
+        sPane.setViewportView(createProjectTaktTimeTable());
+        
+
+    	JScrollPane sPane2 = new JScrollPane();
+    	sPane2.setBorder(BorderFactory.createEmptyBorder());
+    	sPane2.getViewport().setBackground(new Color(247, 249, 252));
+    	sPane2.setBounds(15, 300, 400, 200);
+        frame.add(sPane2);
+        sPane2.setViewportView(createStatisticResult());
+ 
+        
+
+    	JScrollPane sPane3 = new JScrollPane();
+    	sPane3.setBorder(BorderFactory.createEmptyBorder());
+    	sPane3.getViewport().setBackground(new Color(247, 249, 252));
+    	sPane3.setBounds(15, 550, 400, 120);
+        frame.add(sPane3);
+        sPane3.setViewportView(createResultTable());
+
+    	JScrollPane sPane4 = new JScrollPane();
+    	sPane4.setBorder(BorderFactory.createEmptyBorder());
+    	sPane4.getViewport().setBackground(new Color(247, 249, 252));
+    	sPane4.setBounds(500, 350, 400, 350);
+        frame.add(sPane4);
+        sPane4.setViewportView(createChartPanel());
+	}
+	
+	
+	
+	 public ChartPanel createChartPanel() {
+			DefaultCategoryDataset dataset1 = new DefaultCategoryDataset();
+			for(int i=0;i<delivery.length;i++){
+			dataset1.addValue(probability[i], "Delivery time (days)",String.valueOf(delivery[i]));
+			}
+			
+			final CategoryItemRenderer renderer = new BarRenderer();
+			renderer.setSeriesPaint(0, Color.GREEN);
+			
+			renderer.setItemLabelsVisible(true);
+			
+			final CategoryPlot plot = new CategoryPlot();
+			plot.setDataset(dataset1);
+			plot.setRenderer(renderer);
+			
+			plot.setDomainAxis(new CategoryAxis("Delivery time (days)"));
+			plot.setRangeAxis(new NumberAxis("PDF"));
+			
+			plot.setOrientation(PlotOrientation.VERTICAL);
+			plot.setRangeGridlinesVisible(true);
+			plot.setDomainGridlinesVisible(true);
+			
+			
+			/*DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
+			for(int i=0;i<delivery.length;i++){
+			dataset2.addValue(cdf[i], "CDF", String.valueOf(delivery[i]));
+			
+			}*/
+			final CategoryItemRenderer renderer2 = new LineAndShapeRenderer();
+			//plot.setDataset(1, dataset2);
+			plot.setRenderer(1, renderer2);
+			
+			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
+			plot.setRenderer(2, renderer3);
+			
+			plot.mapDatasetToRangeAxis(2, 1);
+			
+			plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+			
+			plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+			final JFreeChart chart = new JFreeChart(plot);
+			
+			chart.setTitle("High Level Project Planning");
+			final ChartPanel chartPanel = new ChartPanel(chart);
+			chartPanel.setPreferredSize(new java.awt.Dimension(400, 350));
+			return chartPanel;
+	 }
+      
+	private JTable createProjectTaktTimeTable(){
+		String[] labels = new String[selectionList.size() + 2];
+    	
+    	labels[0] = "";
+    	for (int i = 0; i < selectionList.size(); i++) {
+			labels[i+1] = selectionList.get(i).getIssueType();
+		}
+    	labels[selectionList.size()+1] = "Projected Time";
+
+        JTable table = new JTable();
+        table.setFont(new Font("Verdana", Font.BOLD, 12));
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setBackground(new Color(230,237,248));
+        tableHeader.setFont(new Font("Garamond",Font.BOLD, 14));
+        table.setModel(new DefaultTableModel(
+                new Double[][]{
+                },
+                labels
+        ));
+        
+
+        Object[][] o = getMultipleDatas();
+        
+        for (int i = 0; i < multipleSIP; i++) {
+            ((DefaultTableModel) table.getModel()).addRow((o[i]));
+        }
+        
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setPreferredWidth(25);
+		}
+        
+        return table;
+	}
+    
+	private JTable createResultTable() {
+		double median=0, std=0, averageT=0, p85=0, p95=0, mode=0;
+		int sip=0;
+		
+		Statistics statistics = new Statistics();
+		median = statistics.getMode(projectsTaktTime);
+		std = statistics.std(projectsTaktTime);
+		averageT = statistics.getAvaregeT(projectsTaktTime);
+		p85 = statistics.getPerc85(projectsTaktTime, 85);
+		p95 = statistics.getPerc85(projectsTaktTime, 95);
+		mode = statistics.getMode(projectsTaktTime);
+		sip = projectsTaktTime.length;
+		
+		JTable table = new JTable();
+        table.setFont(new Font("Verdana", Font.BOLD, 12));
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setBackground(new Color(230,237,248));
+        tableHeader.setFont(new Font("Garamond", Font.BOLD, 14));
+        table.setModel(new DefaultTableModel(
+                new Object[][]{
+                },
+                new String[]{
+                        "", ""
+                }
+        ));
+        
+        int numCols5 = table.getModel().getColumnCount();
+        Object[][] showStatisticsOnTable = new Object[7][numCols5];
+        showStatisticsOnTable[0][0] = "Median";
+        showStatisticsOnTable[0][1] = median;
+        showStatisticsOnTable[1][0] = "STD";
+        showStatisticsOnTable[1][1] = std;
+        showStatisticsOnTable[2][0] = "Average T";
+        showStatisticsOnTable[2][1] = averageT;
+        showStatisticsOnTable[3][0] = "85 Perc";
+        showStatisticsOnTable[3][1] = p85;
+        showStatisticsOnTable[4][0] = "95 Perc";
+        showStatisticsOnTable[4][1] = p95;
+        showStatisticsOnTable[5][0] = "Mode(s)";
+        showStatisticsOnTable[5][1] = mode;
+        showStatisticsOnTable[6][0] = "SIP size";
+        showStatisticsOnTable[6][1] = sip;
+
+        for (int i = 0; i < 7; i++) {
+            ((DefaultTableModel) table.getModel()).addRow(showStatisticsOnTable[i]);
+        }
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setCellRenderer(new TableCellRenderer() {
+			
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+					int row, int column) {
+				DecimalFormat df = new DecimalFormat("#.00"); 
+				Double a = Double.parseDouble(value.toString());
+				JLabel jLabel = new JLabel(df.format(a));
+				return jLabel;
+			}
+		});
+        
+        return table;
+  	}  
+
+    private int range = 11;
+    private double[] probability;
+    private double[] delivery;
+    private double[] cdf;
+	
+    private JTable createStatisticResult() {
+    	JTable simulationTable = new JTable();
+        simulationTable.setFont(new Font("Verdana", Font.BOLD, 12));
+        JTableHeader tableHeader = simulationTable.getTableHeader();
+        tableHeader.setBackground(new Color(230,237,248));
+        tableHeader.setFont(new Font("Garamond",Font.BOLD, 14));
+        simulationTable.setModel(new DefaultTableModel(
+                new Object[][]{
+                },
+                new String[]{
+                        "Delivery time (T)", "Freq", "PDF", "CDF"
+                }
+        ));
+        
+        
+        int numCols4 = simulationTable.getModel().getColumnCount();
+        int min = 1;
+    	for (int i = 0; i < projectsTaktTime.length; i++) {
+			if(projectsTaktTime[i]>0) {
+				min = (int) projectsTaktTime[i];
+				break;
+			}
+		}
+    	
+        int max = (int) projectsTaktTime[projectsTaktTime.length-1];
+        int freq[] = FrequencyAndDeliveryTime.findFrequency(projectsTaktTime,range);
+        Object[][] showAnalyzingOnTable = new Object[range][numCols4];
+        delivery = new double[range];
+        double average;
+        ////////////////////freq in yazdirildigi for///////////////////////////////////
+        
+        int[] counterDeliveryTime = new int[range];
+        int difference = ((max - min) / range);
+        counterDeliveryTime[0] = min;
+        counterDeliveryTime[range-1] = max;
+        for (int i = 0; i < range; i++) {
+            if (i >= 0 && i < range-1) {
+                counterDeliveryTime[i + 1] = (counterDeliveryTime[i] + difference);
+            }
+            //System.out.println(counterDeliveryTime[i]);
+            delivery[i] = counterDeliveryTime[i];
+        }
+        probability = new double[range];
+        cdf = new double[range];
+        double cdft = 0;
+        for (int k = 0; k < range; k++) {
+            showAnalyzingOnTable[k][0] = (int) (counterDeliveryTime[k]);
+            showAnalyzingOnTable[k][1] = (int) ((freq[k]));
+            
+            double pdf = (freq[k] / (double)multipleSIP) * 100;
+            probability[k] = pdf;
+            showAnalyzingOnTable[k][2] = pdf;
+            
+            cdft+=pdf;
+            cdf[k] = cdft;
+            showAnalyzingOnTable[k][3] = cdft;
+        }
+        for (int i = 0; i < range; i++) {
+
+            ((DefaultTableModel) simulationTable.getModel()).addRow((showAnalyzingOnTable[i]));
+        }
+
+        simulationTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+        simulationTable.getColumnModel().getColumn(1).setPreferredWidth(25);
+        simulationTable.getColumnModel().getColumn(2).setPreferredWidth(25);
+        simulationTable.getColumnModel().getColumn(3).setPreferredWidth(25);
+        return simulationTable;
+  	}  
+	
+    double[] avgTaktTimes;
+	ArrayList<double[]> allAvgTaktTime = new ArrayList<>();
+    private Double[][] getMultipleDatas(){
+    	Double[][] d = new Double[multipleSIP][selectionList.size()+2];
+    	
+    	
+    	double deliveryTime[] = new double[selectionList.size()];
+    	double avgTaktTime[] = new double[selectionList.size()];
+    	int scope[] = new int[selectionList.size()];
+    	int firstScope[] = new int[selectionList.size()]; 
+    	
+    	// new algorithm start
+    	for (int i = 0; i < selectionList.size(); i++) {
+	    	ArrayList<Throughput> throughputs = selectionList.get(i).getThrougput().getThroughputList();
+
+	    	deliveryTime[i] = 0;
+	    	avgTaktTime[i] = 0;
+	    	scope[i] = 0;
+	    	
+	    	System.out.println("newScopeState:"+newScopeState);
+	    	
+	    	if(!newScopeState){
+		    	for (int j = 0; j < throughputs.size(); j++) {
+		    		scope[i]+= throughputs.get(j).getCountOfDate();
+				}
+	    	}
+	    	else {
+	    		scope[i] = newScope[i];
+	    	}
+	    	System.out.println((i+1) + ". scope: " + scope[i]);
+	    	
+
+	    	for (int j = 0; j < throughputs.size(); j++) {
+	    		firstScope[i]+= throughputs.get(j).getCountOfDate();
+			}
+		    	
+	    	System.out.println("-------------\nTaktTimes for " + (i+1) +". type");
+	    	
+	    	int taktTimesSize = 0;
+	    	for(int j=0;j<throughputs.size();j++){
+	    		taktTimesSize+= 1 + throughputs.get(j).getInParallel();
+	    	}
+
+	    	int[] taktTimes = new int[taktTimesSize];
+	    	
+	    	
+	    	for (int j = 0; j < taktTimes.length; j++) {
+	    		if(j<throughputs.size())
+	    			taktTimes[j] = throughputs.get(j).getTaktTime();
+	    		else
+	    			taktTimes[j] = 0;
+
+	    		avgTaktTime[i]+= taktTimes[j];
+	    		System.out.print(taktTimes[j]+",");
+			}
+	    	
+	    	avgTaktTime[i] = avgTaktTime[i] / taktTimesSize;
+	    	deliveryTime[i] = (double)scope[i] * avgTaktTime[i];
+	    	System.out.println("\n===> Delivery Time: " + deliveryTime[i]);
+	    	System.out.println("===> Scope: " + scope[i]);
+	    	System.out.println("===> Avg TaktTime: " + avgTaktTime[i]);
+	
+	    	if(allAvgTaktTime.size()<=selectionList.size()){
+		    	avgTaktTimes = new double[localeSIP];
+		    	for (int j = 0; j < localeSIP; j++) {
+		    		avgTaktTimes[j] = resampling(taktTimes) / (double)firstScope[i];
+				}
+		    	Arrays.sort(avgTaktTimes);
+		    	allAvgTaktTime.add(avgTaktTimes);
+	    	}
+		}
+    	// new algorithm finish
+    	
+    	
+    	
+    	double totalPerc = 0;
+    	for (int i = 0; i < scope.length; i++) {
+			totalPerc+= firstScope[i];
+		}
+		System.out.println("Total perc: " + totalPerc);
+    	
+    	for (int i = 0; i < selectionList.size(); i++) {
+    		int a = scope[i];
+			selectionList.get(i).setProjectPercentage((a*100)/totalPerc);
+			System.out.println(selectionList.get(i).getIssueType() +" perc= %" + selectionList.get(i).getProjectPercentage());
+		}
+    	
+    	
+    	for (int i = 0; i < localeSIP; i++) {
+			d[i][0] = (double) i+1;
+			double d2 = 0;
+			for (int j = 0; j < selectionList.size(); j++) {
+				d[i][j+1] = allAvgTaktTime.get(j)[i];
+				d2+= randomFromArray(allAvgTaktTime.get(j)) * selectionList.get(j).getProjectPercentage();
+			}
+			projectsTaktTime[i] = d2;
+			//d[i][selectionList.size()+1]=d2;
+		}
+		for (int i = localeSIP; i < multipleSIP; i++) {
+			double d2 = 0;
+			d[i][0] = (double) i+1;
+			for (int j = 0; j < selectionList.size(); j++) {
+				d2+= randomFromArray(allAvgTaktTime.get(j)) * selectionList.get(j).getProjectPercentage();
+			}
+			//d[i][selectionList.size()+1]=d2;
+			projectsTaktTime[i] = d2;
+		}
+		Arrays.sort(projectsTaktTime);
+		for (int i = 0; i < multipleSIP; i++) {
+			d[i][selectionList.size()+1]=projectsTaktTime[i];
+		}
+    	
+    	/* for (int i = 0; i < 1000; i++) {
+			d[i][0] = (double) i+1;
+			double d2 = 0;
+			for (int j = 0; j < selectionList.size(); j++) {
+				d[i][j+1] = (Double) selectionList.get(j).getTableAnalyzing().getDeliveryTimeSimulationDatas()[i];
+				d2+= randomFromArray(selectionList.get(j).getTableAnalyzing().getDeliveryTimeSimulationDatas()) * selectionList.get(j).getProjectPercentage();
+			}
+			projectsTaktTime[i] = d2;
+			d[i][selectionList.size()+1]=d2;
+		}
+    	for (int i = 1000; i < multipleSIP; i++) {
+			double d2 = 0;
+			d[i][0] = (double) i+1;
+			for (int j = 0; j < selectionList.size(); j++) {
+				d2+= randomFromArray(selectionList.get(j).getTableAnalyzing().getDeliveryTimeSimulationDatas()) * selectionList.get(j).getProjectPercentage();
+			}
+			projectsTaktTime[i] = d2;
+			d[i][selectionList.size()+1]=d2;
+		}
+    	Arrays.sort(projectsTaktTime); */
+    	return d;
+    }
+    
+
+    
+    Random rgen;
+    private double randomFromArray(double[] d){
+    	rgen = new Random();
+        return d[rgen.nextInt(d.length)];
+    }
+    private double randomFromArray(int[] d){
+    	rgen = new Random();
+        return d[rgen.nextInt(d.length)];
+    }
+    
+    private int resampling(int[] array){
+    	int r = 0;
+    	for (int i = 0; i < array.length; i++) {
+			r+= randomFromArray(array);
+		}
+    	return r;
+    }
+    
+    static class Math {
+    	static public double average(double[] array){
+    		double a=0;
+    		for(int i=0;i<array.length;a++){
+    			a+=array[i];
+    		}
+    		return a/array.length;
+    	}
+    	static public int average(int[] array){
+    		int a=0;
+    		for(int i=0;i<array.length;a++){
+    			a+=array[i];
+    		}
+    		return a/array.length;
+    	}
+    }
 }

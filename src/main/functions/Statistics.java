@@ -5,12 +5,14 @@ import java.util.*;
  */
 public class Statistics {
     private double median;
-    private double mode;
 
     Percentile percentile = new Percentile();
 
     public double getMedian(int [] SumRandomTotalWipItems ){
-        median=SumRandomTotalWipItems[SumRandomTotalWipItems.length/2]+(SumRandomTotalWipItems[SumRandomTotalWipItems.length/2])/2;
+    	if(SumRandomTotalWipItems.length%2==0)
+    		median=SumRandomTotalWipItems[SumRandomTotalWipItems.length/2]+(SumRandomTotalWipItems[(SumRandomTotalWipItems.length/2) - 1])/2;
+    	else
+    		median=SumRandomTotalWipItems[((SumRandomTotalWipItems.length+1)/2)-1];
         return median;
     }
 
@@ -33,10 +35,33 @@ public class Statistics {
         double standardDev = Math.sqrt(standardDevNum/(arrLength-1));
         return standardDev;
     }
+    
+    public double std(double [] SumRandomTotalWipItems ){
+        double sumNumber =0;
+        int arrLength = SumRandomTotalWipItems.length;
+        for (int i= 1; i < arrLength; i++)
+        {
+            sumNumber+= SumRandomTotalWipItems[i];
+        }
+        double avg = sumNumber/arrLength;
+
+
+        double standardDevNum=0;
+        for (int i= 1; i < arrLength; i++)
+        {
+            double s = SumRandomTotalWipItems[i]-avg;
+            standardDevNum += s*s;
+        }
+        double standardDev = Math.sqrt(standardDevNum/(arrLength-1));
+        return standardDev;
+    }
 
     public double getAvaregeT(int [] SumRandomTotalWipItems ){
-
-        return SumRandomTotalWipItems[(SumRandomTotalWipItems.length/2)];
+        return getAverageArray(SumRandomTotalWipItems);
+    }
+    
+    public double getAvaregeT(double [] SumRandomTotalWipItems ){
+    	return getAverageArray(SumRandomTotalWipItems);
     }
 
     public double getPerc85(double [] SumRandomTotalWipItems,int value ){
@@ -96,7 +121,27 @@ public class Statistics {
         average=sum/count;
         return (int)average;
     }
+    
 
+    public double getAverageArray(double [] array){
+        double average=0,sum=0, count=0;
+        for (int i=0;i<array.length;i++){
+            sum+=array[i];
+            count++;
+        }
+        average=sum/count;
+        return average;
+    }
+
+    public double getAverage(int [] array){
+        double average=0,sum=0, count=0;
+        for (int i=0;i<array.length;i++){
+            sum+=array[i];
+            count++;
+        }
+        average=sum/count;
+        return average;
+    }
 }
 
 

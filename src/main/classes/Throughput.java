@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Throughput {
 
+    private Date startDate;
     private Date doneDate;
     private int countOfDate;
     private int taktTime;
@@ -40,5 +41,16 @@ public class Throughput {
     public void setInParallel(int inParallel) {
         this.inParallel = inParallel;
     }
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+    
+    
+    
 }
 

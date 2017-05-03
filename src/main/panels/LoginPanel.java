@@ -7,10 +7,14 @@ import main.database.DBHelper;
 import main.parser.SessionParser;
 
 import javax.swing.*;
+
+import org.json.JSONObject;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
+import java.util.Base64;
 
 public class LoginPanel extends AbstractJPanel {
 
@@ -36,17 +40,27 @@ public class LoginPanel extends AbstractJPanel {
         loginButton.setFont(new Font("Segoe Print", Font.PLAIN, 14));
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+            	
+            
+            	String username=usernameField.getText().toString();
+            	String pass=passwordField.getText().toString();
                 String urlString = MainFrame.PROP.getProperty("BASE_URL") + MainFrame.PROP.getProperty("AUTH_URL");
-                String postJsonData = "{\"username\":\""+usernameField.getText() +"\",\"password\":\""+passwordField.getText() +"\"}";
-                String response = HttpRequest.postRequest(urlString,postJsonData);
-                String sessionID = SessionParser.getSessionID(response);
-                Session.setSessionID(sessionID);
-                DBHelper.init();
-                DBHelper.insertStatuses();
-                DBHelper.insertIssueType();
-                MainFrame.changePanel(MainFrame.CONFIGURATION_PANEL);
-                MainFrame.jPanelList.get(MainFrame.CONFIGURATION_PANEL).init();
+                String postJsonData = "{\"username\":\""+username +"\",\"password\":\""+pass +"\"}";
+                System.out.println("urlString " + urlString);
+                
+                byte[] encodedBytes = Base64.getEncoder().encode((username+":"+pass).getBytes());
+                System.out.println("encodedBytes " + new String(encodedBytes));
+                
+                String response = HttpRequest.postRequest(urlString, postJsonData);
+                if(response!=null){
+	              	String sessionID = SessionParser.getSessionID(response);
+	              	Session.setSessionID(sessionID);
+	             	DBHelper.getInstance().insertStatuses();
+	             	DBHelper.getInstance().insertIssueType();
+	             	MainFrame.changePanel(MainFrame.CONFIGURATION_PANEL);
+	             	MainFrame.jPanelList.get(MainFrame.CONFIGURATION_PANEL).init();
+                }
+               
             }
         });
         loginButton.setBackground(SystemColor.inactiveCaption);

@@ -1,17 +1,14 @@
 package main.view;
 
-import main.classes.Issue;
 import main.functions.FrequencyAndDeliveryTime;
 import main.functions.GlobalFunctions;
 import main.functions.RandomWipPlacing;
 import main.functions.Statistics;
-import main.panels.ThroughputPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -19,9 +16,9 @@ import java.util.Arrays;
  */
 public class JTableAnalyzing {
     int tempDoluMu=0;
-    private static int totalDay;
+    private int totalDay;
     private int randomTotalDay;
-    static  int wipSize;
+    int wipSize;
     double[] tempAverageWip;
     double avg = 0;
     double perc85 = 0;
@@ -29,9 +26,9 @@ public class JTableAnalyzing {
     double[] probability;
     double[] deliveryTime;
     double[] cdf;
-    private  int scope;
+    private  int mainScope;
     private int[] tempResampling;
-    public static int[]  tempShowSimulationOnTable;
+    public int[]  tempShowSimulationOnTable;
     Statistics statistics = new Statistics();
 
     static  FrequencyAndDeliveryTime frequencyAndDeliveryTime=new FrequencyAndDeliveryTime();
@@ -55,10 +52,9 @@ public class JTableAnalyzing {
 
        Object[][] showResamplingOnTable = new Object[wipSize][numCols];
 
-        RandomWipPlacing randomWipPlacing=new RandomWipPlacing();
        // tempResampling = new int[wipSize];
         tempResampling = new int[wipSize];
-        tempResampling = randomWipPlacing.RandomizeArray(jTableIssue.getResamplingWip());
+        tempResampling = RandomWipPlacing.RandomizeArray(jTableIssue.getResamplingWip());
 
         for (int i = 0; i < wipSize; i++) {
 
@@ -91,10 +87,9 @@ public class JTableAnalyzing {
         int numCols = taktTimeAndResamplingTable.getModel().getColumnCount();
         scope = jTableIssue.getShowWipOnTable().length;
         Object[][] showResamplingOnTable = new Object[wipSize][numCols];
-        RandomWipPlacing randomWipPlacing=new RandomWipPlacing();
         tempResampling = new int[scope];
-        tempResampling = randomWipPlacing.RandomizeArray(jTableIssue.getResamplingWip());
-        for (int i = 0; i < scope; i++) {
+        tempResampling = RandomWipPlacing.RandomizeArray(jTableIssue.getResamplingWip());
+        for (int i = 0; i < wipSize; i++) {
             showResamplingOnTable[i][0] = jTableIssue.getShowWipOnTable()[i][0];
             showResamplingOnTable[i][1] = tempResampling[i];
             ((DefaultTableModel) taktTimeAndResamplingTable.getModel()).addRow(showResamplingOnTable[i]);
@@ -105,13 +100,7 @@ public class JTableAnalyzing {
         return taktTimeAndResamplingTable;
     }
 
-    public JTable createSummaryDeliveryTimeTable(int listID) {
-        ArrayList<Issue> issueList = new ArrayList<>();
-        if(listID == 1){
-            issueList = ThroughputPanel.issueType1List;
-        } else if(listID == 2) {
-            issueList = ThroughputPanel.issueType2List;
-        }
+    public JTable createSummaryDeliveryTimeTable() {
         JTable summaryDeliveryTimeTable = new JTable();
         summaryDeliveryTimeTable.setFont(new Font("Verdana", Font.BOLD, 12));
         JTableHeader tableHeader = summaryDeliveryTimeTable.getTableHeader();
@@ -134,14 +123,8 @@ public class JTableAnalyzing {
         return summaryDeliveryTimeTable;
     }
 
-    public JTable createSummaryDeliveryTimeTable(int listID,int scope) {
+    public JTable createSummaryDeliveryTimeTable(int scope) {
         setScope(scope);
-        ArrayList<Issue> issueList = new ArrayList<>();
-        if(listID == 1){
-            issueList = ThroughputPanel.issueType1List;
-        } else if(listID == 2) {
-            issueList = ThroughputPanel.issueType2List;
-        }
         JTable summaryDeliveryTimeTable = new JTable();
         summaryDeliveryTimeTable.setFont(new Font("Verdana", Font.BOLD, 12));
         JTableHeader tableHeader = summaryDeliveryTimeTable.getTableHeader();
@@ -166,7 +149,10 @@ public class JTableAnalyzing {
 
     }
 
-    public JTable createDeliveryTimeSimulationTable() {
+    public JTable createDeliveryTimeSimulationTable(){
+    	return createDeliveryTimeSimulationTable(mainScope);
+    }
+    public JTable createDeliveryTimeSimulationTable(int scope) {
         JTable deliveryTimeSimulation = new JTable();
         deliveryTimeSimulation.setFont(new Font("Verdana", Font.BOLD, 12));
         JTableHeader tableHeader = deliveryTimeSimulation.getTableHeader();
@@ -188,12 +174,14 @@ public class JTableAnalyzing {
 
         tempAverageWip = new double[1001];
         tempShowSimulationOnTable=new int[1001];
+        deliveryTimeSimulationDatas = new double[1001];
 
         for (int i = 1; i < 1001; i++) {
 
             showSimulationOnTable[i][0] = i;
             showSimulationOnTable[i][1] = (int)sumRandomTotalWipItems[i];
             showSimulationOnTable[i][2] = Double.valueOf(sumRandomTotalWipItems[i]) / (double) wipSize;
+            deliveryTimeSimulationDatas[i-1] = Double.valueOf(sumRandomTotalWipItems[i]) / (double) wipSize;
             //showSimulationOnTable[i][2] = Double.valueOf(sumRandomTotalWipItems[i]) / (double) getWipSize();
 
             tempAverageWip[i]=(double)showSimulationOnTable[i][2];
@@ -204,11 +192,16 @@ public class JTableAnalyzing {
         deliveryTimeSimulation.getColumnModel().getColumn(0).setPreferredWidth(33);
         deliveryTimeSimulation.getColumnModel().getColumn(1).setPreferredWidth(33);
         deliveryTimeSimulation.getColumnModel().getColumn(2).setPreferredWidth(33);
-
         return deliveryTimeSimulation;
     }
+    private double deliveryTimeSimulationDatas[];
+    
 
-    public JTable createDeliveryTimeForNProjectSimulationTable(int scope) {
+    public double[] getDeliveryTimeSimulationDatas() {
+		return deliveryTimeSimulationDatas;
+	}
+
+	public JTable createDeliveryTimeForNProjectSimulationTable(int scope) {
         setScope(scope);
         JTable deliveryTimeSimulationForNProject = new JTable();
         deliveryTimeSimulationForNProject.setFont(new Font("Verdana", Font.BOLD, 12));
@@ -259,14 +252,12 @@ public class JTableAnalyzing {
                         "Delivery time (T)", "Freq", "PDF", "CDF"
                 }
         ));
-        int numCols4 = simulationTable.getModel().getColumnCount();
         int min = tempShowSimulationOnTable[1];
         int max = tempShowSimulationOnTable[tempShowSimulationOnTable.length-1];
-        int freq[] = frequencyAndDeliveryTime.findFrequency((tempShowSimulationOnTable));
-        Object[][] showAnalyzingOnTable = new Object[11][numCols4];
+        int freq[] = FrequencyAndDeliveryTime.findFrequency((tempShowSimulationOnTable));
+        Object[][] showAnalyzingOnTable = new Object[11][4];
         deliveryTime=new double[11];
         double average;
-        ////////////////////freq in yazdırıldığı for///////////////////////////////////
         int[] counterDeliveryTime = new int[11];
         int difference = ((max - min) / 10);
         counterDeliveryTime[0] = min;
@@ -275,7 +266,6 @@ public class JTableAnalyzing {
             if (i >= 0 && i < 9) {
                 counterDeliveryTime[i + 1] = (counterDeliveryTime[i] + difference);
             }
-            System.out.println(counterDeliveryTime[i]);
             deliveryTime[i] = counterDeliveryTime[i];
         }
         probability = new double[11];
@@ -296,7 +286,6 @@ public class JTableAnalyzing {
         }
         average = getTotalDay()  / wipSize;
         for (int i = 0; i < 11; i++) {
-
             ((DefaultTableModel) simulationTable.getModel()).addRow((showAnalyzingOnTable[i]));
         }
 
@@ -350,14 +339,14 @@ public class JTableAnalyzing {
     }
 
     public int getScope() {
-        return scope;
+        return mainScope;
     }
 
     public void setScope(int scope) {
-        this.scope = scope;
+        this.mainScope = scope;
     }
 
-    public static int getTotalDay() {
+    public int getTotalDay() {
         return totalDay;
     }
 

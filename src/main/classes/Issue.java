@@ -4,11 +4,13 @@ import java.util.Date;
 
 public class Issue {
 
+	private int id;
     private Date createdDate;
     private Date completedDate;
     private String issueKey;
     private int timeCycle;
     private String issueTypeName;
+    private long dateCache;
 
     public Date getCreatedDate() {
         return createdDate;
@@ -39,7 +41,18 @@ public class Issue {
     }
 
     public void setTimeCycle(int timeCycle) {
-        this.timeCycle = timeCycle;
+    	if(timeCycle!=0)
+    		this.timeCycle = timeCycle;
+    	else
+    		this.timeCycle = 1;
+    }
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getIssueTypeName() {
@@ -49,4 +62,14 @@ public class Issue {
     public void setIssueTypeName(String issueTypeName) {
         this.issueTypeName = issueTypeName;
     }
+
+	public long getDateCache() {
+		return dateCache;
+	}
+
+	public void setDateCache(long dateCache) {
+		this.dateCache = dateCache;
+	}
+    
+    
 }

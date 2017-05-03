@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="out/artifacts/JIRAProject_jar/JIRAProject.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="main/panels/AnalyzingPan3el.java" kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="D:/Users/fhalici/Desktop/jfreechart-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="D:/Users/fhalici/Desktop/jcommon-1.0.0.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/JSON-java-master"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/sqlite-jdbc-master"/>
 	<classpathentry kind="output" path="out/production/JIRAProject"/>
 </classpath>

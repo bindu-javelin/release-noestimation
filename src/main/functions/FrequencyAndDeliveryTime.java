@@ -9,26 +9,30 @@ import java.util.Arrays;
 public class FrequencyAndDeliveryTime {
 
     public ArrayList<Resampling> resamplingList = new ArrayList<>();
-
-    private static int[] freq = new int[11];
-    private static int[] counterDeliveryTime = new int[11];
-
+    
     public static int[] findFrequency(int[] totalWip) {
+    	return findFrequency(totalWip,11);
+    }
+
+    public static int[] findFrequency(int[] totalWip, int range) {
         Arrays.sort(totalWip);
+        
+        int[] counterDeliveryTime = new int[range];
+        
         counterDeliveryTime[0] = totalWip[0];
         counterDeliveryTime[10] = totalWip[1000];
         int min = counterDeliveryTime[0];
         int max = counterDeliveryTime[10];
         int difference = ((max - min) / 10);
-        System.out.println("min    ----  "+counterDeliveryTime[0]);
-        System.out.println("max    ----  "+counterDeliveryTime[10]);
+       // System.out.println("min    ----  "+counterDeliveryTime[0]);
+       // System.out.println("max    ----  "+counterDeliveryTime[10]);
 
-        for(int i=0;i<11;i++){
-            if(i>=0 && i<9 ){
-                counterDeliveryTime[i+1]=(counterDeliveryTime[i]+difference);
-            }
-            System.out.println(counterDeliveryTime[i]);
+        for(int i=1;i<range-1;i++){
+            counterDeliveryTime[i+1]=(counterDeliveryTime[i]+difference);
+            // System.out.println(counterDeliveryTime[i]);
         }
+        
+        int[] freq = new int[range];
         int count = 0;
         int j = 0;
         for (int i = 1; i < counterDeliveryTime.length; i++) {
@@ -42,6 +46,50 @@ public class FrequencyAndDeliveryTime {
             }
             freq[i]=count;
         }
+        return freq;
+    }
+    public static int[] findFrequency(double[] array) {
+    	return findFrequency(array, 11);
+    }
+    
+    public static int[] findFrequency(double[] array, int range) {
+        //Arrays.sort(totalWip);
+    	// Dizili sirali gelmedigi takdirde dizi siralanmali
+        int[] counterDeliveryTime = new int[range];
+    	for (int i = 0; i < array.length; i++) {
+			if(array[i]>0) {
+				counterDeliveryTime[0] = (int) array[i];
+				break;
+			}
+		}
+        counterDeliveryTime[range-1] = (int) array[array.length-1];
+        
+        
+        int min = counterDeliveryTime[0];
+        int max = counterDeliveryTime[range-1];
+        int difference = ((max - min) / (range));
+        
+        System.out.println("Freq---->min:"+min+", max:"+max+" ,diff:"+difference);
+        
+        for(int i=0;i<range-1;i++){
+            counterDeliveryTime[i+1]=(counterDeliveryTime[i]+difference);
+            //System.out.println("counterDeliveryTime: "+counterDeliveryTime[i]);
+        }
+        int[] freq = new int[range];
+        int count = 0;
+        int j = 0;
+        for (int i = 1; i < counterDeliveryTime.length; i++) {
+            count = 0;
+            while (j <array.length ) {
+                if ((double)counterDeliveryTime[i] >= array[j]) {
+                    count++;
+                    j++;
+                } else
+                    break;
+            }
+            freq[i]=count;
+        }
+        
         return freq;
     }
 
@@ -72,7 +120,7 @@ public class FrequencyAndDeliveryTime {
             }
             sumRandomTotalWipItems[k]= randomTotalWipItems;
             randomTotalWipItems =0;
-            System.out.println(sumRandomTotalWipItems[k]);
+           // System.out.println(sumRandomTotalWipItems[k]);
         }
 
         Arrays.sort(sumRandomTotalWipItems);

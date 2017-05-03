@@ -52,14 +52,15 @@ public class JTableIssue {
                 showIssuesOnTable[i][0] = list.get(i).getIssueKey();
                 showIssuesOnTable[i][1] = GlobalFunctions.dateFormatString(list.get(i).getCreatedDate());
                 showIssuesOnTable[i][2] = GlobalFunctions.dateFormatString(list.get(i).getCompletedDate());
-                showIssuesOnTable[i][3] = GlobalFunctions.dayDiff(list.get(i).getCreatedDate(), list.get(i).getCompletedDate());
-
-                for (int j = 0; j < showItemsOnTable.length; j++) {
+                //TODO showIssuesOnTable[i][3] = GlobalFunctions.dayDiff(list.get(i).getCreatedDate(), list.get(i).getCompletedDate());
+                showIssuesOnTable[i][3] = list.get(i).getTimeCycle();
+                
+                /* for (int j = 0; j < showItemsOnTable.length; j++) {
                     if (showIssuesOnTable[i][2].equals(showItemsOnTable[j][0])) {
                         if (Integer.valueOf(String.valueOf(showIssuesOnTable[i][3])) / Integer.valueOf(showItemsOnTable[j][1].toString()) != 0)
                             showIssuesOnTable[i][3] = Integer.valueOf(String.valueOf(showIssuesOnTable[i][3])) / Integer.valueOf(showItemsOnTable[j][1].toString());
                     }
-                }
+                } */
             } catch (Exception e) {
                 e.printStackTrace();
             }

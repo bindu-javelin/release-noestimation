@@ -1,10 +1,15 @@
 package main.functions;
+import main.classes.Issue;
 import main.classes.Throughput;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import com.sun.jmx.snmp.Timestamp;
 /**
  * Created by ferhaty
  */
@@ -17,6 +22,38 @@ public class GlobalFunctions {
         else
             return (int)TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 
+    }
+    
+    public static int dayDiff(long started, long completed) {
+    	Date c = new Date(completed);
+    	Date s = new Date(started);
+        long diff = c.getTime() - s.getTime();
+        int result = (int)TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        if(result!=0) return result;
+        return 1;
+    }
+    
+    public static long getTimeStamp(String date){
+    	date = date.replace("T", " ").substring(0, date.indexOf('.'));
+    	DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+    	Date D = null;
+		try {
+			D = dateFormat.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	long time = D.getTime();
+    	return time;
+    }
+    
+    public static Date dateFormat(long lDate){
+    	Date date = new Date();
+    	date.setTime(lDate);
+    	return date;
+    	/*Date dateObj = new Date(lDate);
+    	DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    	return dateFormat(df.format(dateObj));*/
     }
 
     public static Date dateFormat(String strDate) {
@@ -72,6 +109,26 @@ public class GlobalFunctions {
         });
         return DataList;
     }
+    
+    public static ArrayList IssueSort(ArrayList DataList) {
+        Collections.sort(DataList, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Issue p1 = (Issue) o1;
+                Issue p2 = (Issue) o2;
+                int ret = -1;
+                //business logic here
+                if (p1.getCompletedDate().getTime() == p2.getCompletedDate().getTime()) {
+                    ret = 0;
+                } else if (p1.getCompletedDate().getTime() > p2.getCompletedDate().getTime()) {
+                    ret = 1;
+                } else if (p1.getCompletedDate().getTime() < p2.getCompletedDate().getTime()) {
+                    ret = -1;
+                }//end business logic
+                return ret;
+            }
+        });
+        return DataList;
+    }
 
     public static double[] intTodouble(int [] intarray){
         double[] doubleArray=new double[intarray.length];
@@ -83,6 +140,18 @@ public class GlobalFunctions {
 
         return doubleArray;
     }
+    
+    public static int[] doubleToInt(double [] doublearray){
+    	int[] intArray= new int[doublearray.length];
+
+        for(int i=0;i<doublearray.length;i++){
+
+            intArray[i]=(int) doublearray[i];
+        }
+
+        return intArray;
+    }
+
 
     public static double[] listToArray(ArrayList list){
         double temp[]=new double[list.size()];

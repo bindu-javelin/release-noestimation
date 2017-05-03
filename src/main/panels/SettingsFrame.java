@@ -85,7 +85,7 @@ public class SettingsFrame extends JFrame {
         lblMaxResult.setBounds(26, 160, 100, 20);
         contentPane.add(lblMaxResult);
 
-        JLabel lblLastPull = new JLabel("LAST PULL  ");
+        JLabel lblLastPull = new JLabel("CACHE TIME  ");
         lblLastPull.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 14));
         lblLastPull.setBounds(26, 200, 89, 20);
         contentPane.add(lblLastPull);
@@ -102,14 +102,14 @@ public class SettingsFrame extends JFrame {
                 authUrlTF.setText(prop.getProperty("AUTH_URL"));
                 jqlUrlTF.setText(prop.getProperty("JQL_URL"));
                 maxResultTF.setText(prop.getProperty("MAX_RESULT"));
-                lastPulLTF.setText(prop.getProperty("LAST_PULL"));
+                lastPulLTF.setText(prop.getProperty("CACHE_TIME"));
             } else {
                 try {
                     prop.setProperty("BASE_URL", "");
                     prop.setProperty("AUTH_URL", "");
                     prop.setProperty("JQL_URL", "");
                     prop.setProperty("MAX_RESULT", "");
-                    prop.setProperty("LAST_PULL", "");
+                    prop.setProperty("CACHE_TIME", "");
                     prop.store(new FileOutputStream("config.properties"), null);
 
                 } catch (IOException e1) {
@@ -133,7 +133,7 @@ public class SettingsFrame extends JFrame {
                     prop.setProperty("AUTH_URL", authUrlTF.getText());
                     prop.setProperty("JQL_URL", jqlUrlTF.getText());
                     prop.setProperty("MAX_RESULT", maxResultTF.getText());
-                    prop.setProperty("LAST_PULL", lastPulLTF.getText());
+                    prop.setProperty("CACHE_TIME", lastPulLTF.getText());
                     prop.store(new FileOutputStream("config.properties"), null);
                     JOptionPane.showMessageDialog(null, "Settings are saved succesfully!");
                     setVisible(false);
