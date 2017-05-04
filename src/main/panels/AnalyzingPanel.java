@@ -457,13 +457,13 @@ class Multiple {
 			plot.setDomainGridlinesVisible(true);
 			
 			
-			/*DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
+			DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
 			for(int i=0;i<delivery.length;i++){
 			dataset2.addValue(cdf[i], "CDF", String.valueOf(delivery[i]));
 			
-			}*/
+			}
 			final CategoryItemRenderer renderer2 = new LineAndShapeRenderer();
-			//plot.setDataset(1, dataset2);
+			plot.setDataset(1, dataset2);
 			plot.setRenderer(1, renderer2);
 			
 			final CategoryItemRenderer renderer3 = new LineAndShapeRenderer();
