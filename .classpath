@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry excluding="main/panels/AnalyzingPan3el.java" kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="D:/Users/fhalici/Desktop/jfreechart-1.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/Users/fhalici/Desktop/jcommon-1.0.0.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/JSON-java-master"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sqlite-jdbc-master"/>
+	<classpathentry exported="true" kind="lib" path="src/lib/jcommon-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="src/lib/jfreechart-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="src/lib/json-1.5-20090211.jar"/>
+	<classpathentry exported="true" kind="lib" path="src/lib/sqlite-jdbc-3.15.1.jar"/>
 	<classpathentry kind="output" path="out/production/JIRAProject"/>
 </classpath>

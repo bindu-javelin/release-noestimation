@@ -1,7 +1,7 @@
 
-This project is a desktop application to use The NoEstimates Movement on your project which developed on Atlassian JIRA API.
+This project is a desktop application to predict project delivery time by taking past data information from Atlassian Jira.
 
-Basicly it gives a project finish time projection by analyzing previous project data and helps users to forecast their project budget and prepare sales proposals.
+Basically it gives a project finish time projection by doing statistical data processing on previous projects data and helps users to forecast their project budget and prepare sales proposals.
  
 
 ###how to build and run?
@@ -10,7 +10,7 @@ This project uses sqlite database, you must configure the database first.
 For Database settings
 Create a folder named sqlite in C:\
 Move the jiraProject.db file into the sqlite folder
-When run the project, you mush configure the settings on Login Panel. You can open the settings menu by the button which is on the top-right of Login Panel. For
+When run the project, you must configure the settings on config.properties file.
 
 ###For Jira Settings
 Change the relevant sections in the config.properties file
@@ -23,7 +23,7 @@ JQL_URL=rest/api/latest/search?jql\= (This URL is default for JQL filter in JIRA
 
 MAX_RESULT=How many issues get by JIRA API to resampling for estimating delivery time of project?
 
-LAST_PULL=The number of days, how many days will be kept the project datas in SQLite database.( min 1 day )
+LAST_PULL=The number of days, how many days will be kept the project data in SQLite database.( min 1 day )
 
 
 

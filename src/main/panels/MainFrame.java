@@ -3,9 +3,6 @@ package main.panels;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import main.functions.GlobalFunctions;
-import sun.net.www.content.image.jpeg;
-
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
